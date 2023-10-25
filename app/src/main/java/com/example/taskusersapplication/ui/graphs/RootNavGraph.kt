@@ -4,7 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.example.taskusersapplication.ui.presentation.HomeScreenContent
+import com.example.taskusersapplication.ui.presentation.MainScreenContent
 
 @Composable
 fun RootNavigationGraph(navController: NavHostController) {
@@ -14,7 +14,7 @@ fun RootNavigationGraph(navController: NavHostController) {
         startDestination = Graph.HOME
     ) {
         composable(route = Graph.HOME) {
-            HomeScreenContent()
+            MainScreenContent()
         }
     }
 }

@@ -17,12 +17,17 @@ interface UsersApi {
         @Query("limit") pageCount: Int
     ): UsersDto
 
+    @GET("users/search")
+    suspend fun getUsersByName(
+        @Query("skip") page: Int,
+        @Query("limit") pageCount: Int,
+        @Query("q") name: String): UsersDto
+
     @POST("users/add")
     suspend fun postUser(@Body user: User) : User?
 
     @DELETE("users/{id}")
     suspend fun deleteUser(@Path("id") id:Int) : User?
-
 
     companion object {
         const val BASE_URL = "https://dummyjson.com/"

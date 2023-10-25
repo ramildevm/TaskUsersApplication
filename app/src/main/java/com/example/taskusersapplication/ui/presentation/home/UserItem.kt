@@ -1,4 +1,4 @@
-package com.example.taskusersapplication.ui.presentation
+package com.example.taskusersapplication.ui.presentation.home
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -28,11 +28,9 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import com.example.taskusersapplication.data.domain.User
 import com.example.taskusersapplication.ui.theme.TaskUsersApplicationTheme
-import com.example.taskusersapplication.ui.viewmodels.UsersViewModel
 import kotlin.random.Random
 
 @Composable

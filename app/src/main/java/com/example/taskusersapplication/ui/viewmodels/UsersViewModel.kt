@@ -1,20 +1,17 @@
 package com.example.taskusersapplication.ui.viewmodels
 
-import androidx.compose.runtime.remember
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.paging.Pager
-import androidx.paging.map
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import com.example.taskusersapplication.data.adapters.ResponseResult
 import com.example.taskusersapplication.data.adapters.UserAdapter
 import com.example.taskusersapplication.data.domain.User
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlinx.coroutines.flow.Flow
 
 @HiltViewModel
 class UsersViewModel @Inject constructor(
@@ -26,10 +23,24 @@ class UsersViewModel @Inject constructor(
     val insertResponseResult = MutableLiveData<ResponseResult>()
     val deleteResponseResult = MutableLiveData<ResponseResult>()
 
+    private var currentNameValue: String? = null
+
+    private var currentSearchResult: Flow<PagingData<User>>? = null
     fun createUser(user: User){
         viewModelScope.launch {
             insertResponseResult.postValue(adapter.createUser(user))
         }
+    }
+    fun findUserByName(name: String):Flow<PagingData<User>> {
+        val lastResult = currentSearchResult
+        if (name == currentNameValue && lastResult != null) {
+            return lastResult
+        }
+        currentNameValue = name
+        val newResult = adapter.findUser(name)
+            .cachedIn(viewModelScope)
+        currentSearchResult = newResult
+        return newResult
     }
     fun deleteUser(user: User){
         viewModelScope.launch {

@@ -1,14 +1,12 @@
-package com.example.taskusersapplication.ui.presentation
+package com.example.taskusersapplication.ui.presentation.home
 
 import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.EaseInOut
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,9 +18,12 @@ import androidx.compose.material.FabPosition
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
+import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -46,7 +47,39 @@ import com.example.taskusersapplication.ui.viewmodels.UsersViewModel
 @Composable
 fun UsersListContent(navController: NavHostController, usersViewModel: UsersViewModel) {
     val lifecycleOwner = LocalLifecycleOwner.current
-    Scaffold(floatingActionButtonPosition = FabPosition.End,
+    var searchText by remember {
+        mutableStateOf("")
+    }
+    Scaffold(
+        topBar={
+            Column(
+                Modifier.height(80.dp)
+            ) {
+                OutlinedTextField(
+                    modifier = Modifier
+                        .padding(5.dp)
+                        .fillMaxWidth(),
+                    label = {
+                        Text("Search by name")
+                    },
+                    leadingIcon = {
+                        Icon(
+                            Icons.Rounded.Search,
+                            null,
+                            tint = MaterialTheme.colors.secondary
+                        )
+
+                    },
+                    value = searchText,
+                    onValueChange = {
+                        if(it.trim().isEmpty())
+                            searchText = ""
+                        searchText = it
+                    }
+                )
+            }
+        },
+        floatingActionButtonPosition = FabPosition.End,
         floatingActionButton = {
             FloatingActionButton(
                 backgroundColor = MaterialTheme.colors.primary,
@@ -58,7 +91,11 @@ fun UsersListContent(navController: NavHostController, usersViewModel: UsersView
             }
         }) {
         val context = LocalContext.current
-        val users = usersViewModel.usersPagingFlow.collectAsLazyPagingItems()
+        val users = if(searchText.trim().isEmpty())
+                usersViewModel.usersPagingFlow.collectAsLazyPagingItems()
+            else
+                usersViewModel.findUserByName(searchText).collectAsLazyPagingItems()
+
         LaunchedEffect(users.loadState) {
             if (users.loadState.refresh is LoadState.Error) {
                 Toast.makeText(
@@ -82,14 +119,15 @@ fun UsersListContent(navController: NavHostController, usersViewModel: UsersView
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     items(users) {
-                        Box(Modifier
-                            .fillMaxWidth()
-                            .animateContentSize(
-                            animationSpec = tween(
-                                durationMillis = 300,
-                                easing = EaseInOut
-                            )
-                        )){
+                        Box(
+                            Modifier
+                                .fillMaxWidth()
+                                .animateContentSize(
+                                    animationSpec = tween(
+                                        durationMillis = 300,
+                                        easing = EaseInOut
+                                    )
+                                )){
                             var userObject by remember {
                                 mutableStateOf(it)
                             }
@@ -107,13 +145,21 @@ fun UsersListContent(navController: NavHostController, usersViewModel: UsersView
                                     usersViewModel.deleteUser(user)
                                     usersViewModel.deleteResponseResult.observe(lifecycleOwner) { result ->
                                         if (result == ResponseResult.SUCCESS) {
-                                            userObject = null //Delete imitation
+                                            //
+                                            // Delete imitation
+                                            //
+                                            userObject = null
                                         }
                                         else
                                             Toast.makeText(context, "Deleting error", Toast.LENGTH_SHORT).show()
                                     }
                                 }
                             }
+                        }
+                    }
+                    if(users.itemCount==0){
+                        item{
+                            Text("No result", modifier=Modifier.align(Alignment.TopCenter))
                         }
                     }
                     item {

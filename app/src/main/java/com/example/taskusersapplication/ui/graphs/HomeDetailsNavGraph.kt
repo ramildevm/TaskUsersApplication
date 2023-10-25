@@ -22,10 +22,6 @@ fun NavGraphBuilder.homeDetailsNavGraph(
         }
         composable(route = DetailsScreen.AddUser.route) {
             UserAddContent(navController, usersViewModel)
-//            navController.popBackStack(
-//                route = DetailsScreen.Information.route,
-//                inclusive = false
-//            )
         }
     }
 }
