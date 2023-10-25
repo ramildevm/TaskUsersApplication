@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">TaskUsersApplication</string>
+    <string name="app_name">Users App</string>
+    <string name="users">Users</string>
 </resources>
